@@ -5,7 +5,7 @@ namespace VTFileSystemManagement
 {
     public class FileSystemManager
     {
-        private static string _DataDirectory = Path.Combine(Path.GetFullPath(Directory.GetCurrentDirectory()), "Data");
+        private string _DataDirectory = Path.Combine(Path.GetFullPath(Directory.GetCurrentDirectory()), "Data");
         public FileSystemManager()
         {
             if (!Directory.Exists(_DataDirectory))
@@ -43,6 +43,11 @@ namespace VTFileSystemManagement
                     serializer.Serialize(file, jsonData);
                 }
             }
+        }
+
+        public bool IsFileExists(string fileName)
+        {
+            return File.Exists(BuildFilePath(fileName));
         }
 
         private string BuildFilePath(string file)

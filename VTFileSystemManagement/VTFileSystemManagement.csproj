@@ -6,7 +6,7 @@
     <Authors>Von Trinks</Authors>
     <Description>Simple library used to Read/Write JSON files to Disk.</Description>
     <PackageReleaseNotes>Initial release.</PackageReleaseNotes>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
   </PropertyGroup>
 
   <ItemGroup>

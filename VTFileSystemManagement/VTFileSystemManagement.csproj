@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <PackageId>VTFileSystemManagement</PackageId>
+    <Authors>Von Trinks</Authors>
+    <Description>Simple library used to Read/Write JSON files to Disk.</Description>
+    <PackageReleaseNotes>Initial release.</PackageReleaseNotes>
+    <Version>1.0.1</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
+
+</Project>

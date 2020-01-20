@@ -1,4 +1,6 @@
 ﻿using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace VTFileSystemManagement
@@ -8,16 +10,16 @@ namespace VTFileSystemManagement
     /// </summary>
     public class FileSystemManager
     {
-        private string _DataDirectory = Path.Combine(Path.GetFullPath(Directory.GetCurrentDirectory()), "Data");
+        private string _DirectoryPath = Path.Combine(Path.GetFullPath(Directory.GetCurrentDirectory()), "Data");
 
         /// <summary>
         /// Constructor makes sure a "Data" Directory as JSON documents are saved here by default in this library. 
         /// </summary>
         public FileSystemManager()
         {
-            if (!Directory.Exists(_DataDirectory))
+            if (!Directory.Exists(_DirectoryPath))
             {
-                Directory.CreateDirectory(_DataDirectory);
+                Directory.CreateDirectory(_DirectoryPath);
             }
         }
 
@@ -27,9 +29,10 @@ namespace VTFileSystemManagement
         /// <param name="createDirectoryName"></param>
         public FileSystemManager(string createDirectoryName)
         {
+            _DirectoryPath = Path.Combine(Path.GetFullPath(Directory.GetCurrentDirectory()), createDirectoryName);
             if (!Directory.Exists(createDirectoryName))
             {
-                Directory.CreateDirectory(createDirectoryName);
+                Directory.CreateDirectory(createDirectoryName);                
             }
         }
 
@@ -68,7 +71,38 @@ namespace VTFileSystemManagement
                 };
                 serializer.Serialize(file, jsonData);
             }
+        }
 
+        /// <summary>
+        /// Let's you save file to a specific file path. 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="jsonData"></param>
+        /// <param name="fileLocation"></param>
+        /// <param name="fileName"></param>
+        public void SaveJsonFileToSpecificLocation<T>(T jsonData, string fileLocation, string fileName)
+        {
+            using (StreamWriter file = File.CreateText(Path.Combine(fileLocation, fileName)))
+            {
+                var serializer = new JsonSerializer
+                {
+                    Formatting = Formatting.Indented
+
+                };
+                serializer.Serialize(file, jsonData);
+            }
+        }
+
+        public void LogException(Exception ex, string fileName = null)
+        {
+            var filePath = BuildFilePath(fileName ?? $"{Environment.MachineName}_{DateTime.Now.ToString("yyyy-dd-M--HH-mm-ss")}.txt");
+            using (StreamWriter writer = File.CreateText(filePath))
+            {
+                writer.WriteLine(ex.GetType().FullName);
+                writer.WriteLine("Message : " + ex.Message);
+                writer.WriteLine("StackTrace : " + ex.StackTrace);
+                writer.WriteLine("Inner Exception : " + ex.InnerException.Message);                
+            }
         }
 
         public bool IsFileExists(string fileName)
@@ -83,7 +117,7 @@ namespace VTFileSystemManagement
         /// <returns></returns>
         private string BuildFilePath(string file)
         {
-            return Path.Combine(_DataDirectory, file);
+            return Path.Combine(_DirectoryPath, file);
         }
     }
 }

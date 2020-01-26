@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.IO;
 
 namespace VTFileSystemManagement
@@ -53,6 +52,17 @@ namespace VTFileSystemManagement
             return null;            
         }
 
+        public string ReadJsonFileFromSpecificLocation(string fileName, string fileLocation)
+        {
+            string file = Path.Combine(fileLocation, fileName);
+
+            if (File.Exists(file))
+            {
+                return File.ReadAllText(file);
+            }
+            return null;
+        }
+
         /// <summary>
         /// Saves an object to a JSON file by serializing using NewtonSoft.
         /// This defaults it's location to <see cref="_DataDirectory"/>
@@ -93,6 +103,11 @@ namespace VTFileSystemManagement
             }
         }
 
+        public DateTime GetFilesLastModifiedTime(string fileLocation, string fileName)
+        {
+            return File.GetLastWriteTime(Path.Combine(fileLocation, fileName));
+        }
+
         public void LogException(Exception ex, string fileName = null)
         {
             var filePath = BuildFilePath(fileName ?? $"{Environment.MachineName}_{DateTime.Now.ToString("yyyy-dd-M--HH-mm-ss")}.txt");
@@ -105,9 +120,25 @@ namespace VTFileSystemManagement
             }
         }
 
+        /// <summary>
+        /// Checks if a file exists in the root directory of a program inside "Data" Directory.
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
         public bool IsFileExists(string fileName)
         {
             return File.Exists(BuildFilePath(fileName));
+        }
+
+        /// <summary>
+        /// Override that allows the user to check if a file exists in a specific location. 
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <param name="fileLocation"></param>
+        /// <returns></returns>
+        public bool IsFileExists(string fileName, string fileLocation)
+        {
+            return File.Exists(Path.Combine(fileLocation, fileName));
         }
 
         /// <summary>

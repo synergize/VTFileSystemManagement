@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Diagnostics;
 using System.IO;
 
 namespace VTFileSystemManagement
@@ -61,6 +62,41 @@ namespace VTFileSystemManagement
                 return File.ReadAllText(file);
             }
             return null;
+        }
+
+        private protected bool IsFileClosed(string filePath)
+        {
+            try
+            {
+                using (FileStream stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.None))
+                {
+                    stream.Close();
+                }
+            }
+            catch (IOException)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public bool WaitUntilFileClosed(Func<object> func, string filePath, int waitInMilliseconds = 5000)
+        {
+            var stopWatch = new Stopwatch();
+            var isFileClosed = IsFileClosed(filePath);
+            stopWatch.Start();
+            while (!isFileClosed && stopWatch.ElapsedMilliseconds < waitInMilliseconds)
+            {
+                isFileClosed = IsFileClosed(filePath);
+                func.Invoke();                
+            }
+            stopWatch.Stop();
+            if (stopWatch.ElapsedMilliseconds > waitInMilliseconds)
+            {
+                return false;
+            }
+            stopWatch.Stop();
+            return true;          
         }
 
         /// <summary>

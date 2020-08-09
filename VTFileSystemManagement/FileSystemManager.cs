@@ -10,16 +10,16 @@ namespace VTFileSystemManagement
     /// </summary>
     public class FileSystemManager
     {
-        private string _DirectoryPath = Path.Combine(Path.GetFullPath(Directory.GetCurrentDirectory()), "Data");
+        private readonly string _directoryPath = Path.Combine(Path.GetFullPath(Directory.GetCurrentDirectory()), "Data");
 
         /// <summary>
         /// Constructor makes sure a "Data" Directory as JSON documents are saved here by default in this library. 
         /// </summary>
         public FileSystemManager()
         {
-            if (!Directory.Exists(_DirectoryPath))
+            if (!Directory.Exists(_directoryPath))
             {
-                Directory.CreateDirectory(_DirectoryPath);
+                Directory.CreateDirectory(_directoryPath);
             }
         }
 
@@ -29,7 +29,7 @@ namespace VTFileSystemManagement
         /// <param name="createDirectoryName"></param>
         public FileSystemManager(string createDirectoryName)
         {
-            _DirectoryPath = Path.Combine(Path.GetFullPath(Directory.GetCurrentDirectory()), createDirectoryName);
+            _directoryPath = Path.Combine(Path.GetFullPath(Directory.GetCurrentDirectory()), createDirectoryName);
             if (!Directory.Exists(createDirectoryName))
             {
                 Directory.CreateDirectory(createDirectoryName);                
@@ -38,37 +38,29 @@ namespace VTFileSystemManagement
 
         /// <summary>
         /// Reads a JSON file by file name and returns it in a string format. 
-        /// This defaults it's location inside directory <see cref="_DataDirectory"/>
+        /// This defaults it's location inside directory <see cref="_directoryPath"/>
         /// </summary>
         /// <param name="fileName"></param>
         /// <returns></returns>
         public string ReadJsonFile(string fileName)
         {
-            string file = BuildFilePath(fileName);
+            var file = BuildFilePath(fileName);
 
-            if (File.Exists(file))
-            {
-                return File.ReadAllText(file);
-            }
-            return null;            
+            return File.Exists(file) ? File.ReadAllText(file) : null;
         }
 
         public string ReadJsonFileFromSpecificLocation(string fileName, string fileLocation)
         {
-            string file = Path.Combine(fileLocation, fileName);
+            var file = Path.Combine(fileLocation, fileName);
 
-            if (File.Exists(file))
-            {
-                return File.ReadAllText(file);
-            }
-            return null;
+            return File.Exists(file) ? File.ReadAllText(file) : null;
         }
 
         private protected bool IsFileClosed(string filePath)
         {
             try
             {
-                using (FileStream stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.None))
+                using (var stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.None))
                 {
                     stream.Close();
                 }
@@ -101,14 +93,14 @@ namespace VTFileSystemManagement
 
         /// <summary>
         /// Saves an object to a JSON file by serializing using NewtonSoft.
-        /// This defaults it's location to <see cref="_DataDirectory"/>
+        /// This defaults it's location to <see cref="_directoryPath"/>
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="jsonData"></param>
         /// <param name="fileName"></param>
         public void SaveJsonFile<T>(T jsonData, string fileName)
         {
-            using (StreamWriter file = File.CreateText(BuildFilePath(fileName)))
+            using (var file = File.CreateText(BuildFilePath(fileName)))
             {
                 var serializer = new JsonSerializer
                 {
@@ -128,7 +120,7 @@ namespace VTFileSystemManagement
         /// <param name="fileName"></param>
         public void SaveJsonFileToSpecificLocation<T>(T jsonData, string fileLocation, string fileName)
         {
-            using (StreamWriter file = File.CreateText(Path.Combine(fileLocation, fileName)))
+            using (var file = File.CreateText(Path.Combine(fileLocation, fileName)))
             {
                 var serializer = new JsonSerializer
                 {
@@ -146,13 +138,13 @@ namespace VTFileSystemManagement
 
         public void LogException(Exception ex, string fileName = null)
         {
-            var filePath = BuildFilePath(fileName ?? $"{Environment.MachineName}_{DateTime.Now.ToString("yyyy-dd-M--HH-mm-ss")}.txt");
-            using (StreamWriter writer = File.CreateText(filePath))
+            var filePath = BuildFilePath(fileName ?? $"{Environment.MachineName}_{DateTime.Now:yyyy-dd-M--HH-mm-ss}.txt");
+            using (var writer = File.CreateText(filePath))
             {
                 writer.WriteLine(ex.GetType().FullName);
                 writer.WriteLine("Message : " + ex.Message);
                 writer.WriteLine("StackTrace : " + ex.StackTrace);
-                writer.WriteLine("Inner Exception : " + ex.InnerException.Message);                
+                writer.WriteLine("Inner Exception : " + ex.InnerException?.Message);                
             }
         }
 
@@ -178,13 +170,13 @@ namespace VTFileSystemManagement
         }
 
         /// <summary>
-        /// Conbines <see cref="file"/> and <see cref="_DataDirectory"/> to create the full file path of a text file by name. 
+        /// Combines <see cref="file"/> and <see cref="_directoryPath"/> to create the full file path of a text file by name. 
         /// </summary>
         /// <param name="file"></param>
         /// <returns></returns>
         private string BuildFilePath(string file)
         {
-            return Path.Combine(_DirectoryPath, file);
+            return Path.Combine(_directoryPath, file);
         }
     }
 }

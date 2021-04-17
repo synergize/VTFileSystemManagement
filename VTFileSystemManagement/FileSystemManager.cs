@@ -178,5 +178,15 @@ namespace VTFileSystemManagement
         {
             return Path.Combine(_directoryPath, file);
         }
+
+        /// <summary>
+        /// Deletes target file using the configured directory path.
+        /// </summary>
+        /// <param name="file"></param>
+        public void DeleteFile(string file)
+        {
+            var filePath = Path.Combine(_directoryPath, file);
+            File.Delete(filePath);
+        }
     }
 }
